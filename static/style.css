@@ -1,0 +1,76 @@
+body {
+    background-color: rgb(187, 238, 255);
+}
+
+h1 {
+    color: rgb(7, 36, 163);
+    font-size: 50px;
+    text-align: center;
+    margin: auto;
+}
+
+
+
+p {
+    color: hotpink;
+    margin-top: -35px;
+    margin: auto;
+    text-align: center;
+}
+
+a, a:visited {
+    color: rgb(26, 106, 131);
+    padding: 15px;
+    background-color: rgb(157, 210, 227);
+    border-radius: 5px;
+    margin-left: 17px;
+    font-size: 25px;
+    margin-top: 724px;
+    margin: auto;
+    text-align: center;
+}
+
+a:hover {
+    color: rgb(157, 210, 227);
+    background-color: rgb(26, 106, 131);
+}
+
+td {
+    text-align: center;
+    padding: 15px;
+    border-radius: 5px;
+    background-color: rgb(157, 210, 227);
+    color: rgb(26, 106, 131);
+    font-size: 25px;
+    margin: 30px;
+}
+
+table {
+    margin: auto;
+    margin-top: 5px;
+    text-align: center;
+}
+
+.help {
+    text-align: right;
+    padding: 15px;
+    margin-top: 20px;
+    margin-bottom: -55px;
+}
+
+input, select {
+    color: rgb(26, 106, 131);
+    padding: 8px;
+    background-color: rgb(157, 210, 227);
+    border-radius: 5px;
+    margin-left: 17px;
+    font-size: 25px;
+    margin-top: 15px;
+    margin: auto;
+    text-align: center;
+}
+
+.slide {
+    width: 100%;
+}
+
