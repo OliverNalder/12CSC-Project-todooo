@@ -12,10 +12,11 @@
     <td>{{num}}</td>
 
     <td>{{row[1]}}
-    <div class="slidecontainer">
-        <input type="range" min="0" max="4" value="{{row[2]}}" class="slider" id="myRange">
-    </div></td>
-    
+    <form method = post >
+        <div class="slidecontainer">
+            <input type="range" min="0" max="4" value="{{row[2]}}" class="slider" id="myRange">
+        </div></td>
+    </form>
     <td><a href='/edit/{{row[0]}}'>edit</a></td>
     </tr>
 %end

@@ -31,6 +31,10 @@ def closed_list():
     output = template('archives_table', rows=result)
     return output
 
+'''@route("/signup", method="")
+def signup():
+'''
+
 @route('/new', method='GET')
 def new_item():
 
@@ -40,7 +44,7 @@ def new_item():
         conn = sqlite3.connect('todo.db')
         c = conn.cursor()
 
-        c.execute("INSERT INTO todo (task,status) VALUES (?,?)", (new, 1))
+        c.execute("INSERT INTO todo (task,status,progress) VALUES (?,?,?)", (new, 1, 0))
         new_id = c.lastrowid
 
         conn.commit()
