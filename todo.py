@@ -5,7 +5,7 @@ from bottle import route, run, debug, template, request, static_file, error
 from bottle import default_app
 
 
-@route('/todo')
+@route('/todo', method=["GET", "POST"])
 def todo_list():
 
     conn = sqlite3.connect('todo.db')
@@ -14,7 +14,13 @@ def todo_list():
     result = c.fetchall()
     c.close()
 
-    
+    if request.GET.slider():
+        new_value = request.GET.slider.strip()
+        value_id = request.GET.slider.id()
+        conn = sqlite3.connect('todo.db')
+        c = conn.cursor()
+        c.execute("UPDATE todo SET progress ? WHERE id LIKE ?", (new_value, value_id))
+        c.close()
     
 
     output = template('make_table', rows=result)
@@ -31,9 +37,14 @@ def closed_list():
     output = template('archives_table', rows=result)
     return output
 
-'''@route("/signup", method="")
+@route("/signup", method=["GET", "POST"])
 def signup():
-'''
+    if request.GET.save:
+        username = request.GET.username.strip()
+        password = request.GET.password()
+
+        conn = sqlite3.connect()
+
 
 @route('/new', method='GET')
 def new_item():
