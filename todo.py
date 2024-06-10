@@ -42,8 +42,18 @@ def signup():
     if request.GET.save:
         username = request.GET.username.strip()
         password = request.GET.password()
+        username_placeholder = 'Username:'
+        password_placeholder = 'Password:'
 
-        conn = sqlite3.connect()
+        conn = sqlite3.connect('acc_info.db')
+        c = conn.cursor()
+        c.execute("SELECT username FROM acc_info WHERE username LIKE ?", (username))
+        checker = c.fetchall()
+        if checker True:
+            
+
+        c.execute("INSERT INTO acc_info (username,password) VALUES (?,?)", (username, password))
+    return template('signup.tpl', username_placeholder, password_placeholder)
 
 
 @route('/new', method='GET')
