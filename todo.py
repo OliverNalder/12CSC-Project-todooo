@@ -1,5 +1,5 @@
 import sqlite3
-from bottle import route, run, debug, template, request, static_file, error
+from bottle import route, run, debug, template, request, static_file, error, redirect
 
 # only needed when you run Bottle on mod_wsgi
 from bottle import default_app
@@ -37,23 +37,33 @@ def closed_list():
     output = template('archives_table', rows=result)
     return output
 
-@route("/signup", method=["GET", "POST"])
+@route("/signup", method="GET")
 def signup():
+    username_placeholder = 'Username:'
     if request.GET.save:
         username = request.GET.username.strip()
         password = request.GET.password()
-        username_placeholder = 'Username:'
-        password_placeholder = 'Password:'
+
 
         conn = sqlite3.connect('acc_info.db')
         c = conn.cursor()
         c.execute("SELECT username FROM acc_info WHERE username LIKE ?", (username))
         checker = c.fetchall()
-        if checker True:
-            
-
-        c.execute("INSERT INTO acc_info (username,password) VALUES (?,?)", (username, password))
-    return template('signup.tpl', username_placeholder, password_placeholder)
+        c.close()
+        if checker:
+            username_placeholder = 'Username not avalible'
+            return template('signup.tpl', username_placeholder)
+        else:
+            conn = sqlite3.connect('acc_info.db')
+            c = conn.cursor()
+            c.execute("INSERT INTO acc_info (username,password) VALUES (?,?)", (username, password))
+            conn.commit()
+            c.close
+            return redirect('/')
+    else:
+        return template('signup.tpl', user_text=username_placeholder)
+        
+    
 
 
 @route('/new', method='GET')
@@ -162,3 +172,4 @@ debug(True)
 run(reloader=True)
 
 
+print("Hello World!")
