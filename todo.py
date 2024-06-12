@@ -1,5 +1,6 @@
 import sqlite3
 from bottle import route, run, debug, template, request, static_file, error, redirect
+import os
 
 # only needed when you run Bottle on mod_wsgi
 from bottle import default_app
@@ -42,23 +43,32 @@ def signup():
     username_placeholder = 'Username:'
     if request.GET.save:
         username = request.GET.username.strip()
-        password = request.GET.password()
+        password = request.GET.password.strip()
 
 
-        conn = sqlite3.connect('acc_info.db')
-        c = conn.cursor()
-        c.execute("SELECT username FROM acc_info WHERE username LIKE ?", (username))
-        checker = c.fetchall()
-        c.close()
-        if checker:
-            username_placeholder = 'Username not avalible'
-            return template('signup.tpl', username_placeholder)
-        else:
+        
+        try:
+            conn = sqlite3.connect('acc_info.db')
+            c = conn.cursor()
+            c.execute(f"SELECT username FROM acc_info WHERE username LIKE '{username}'")
+            checker = c.fetchall()
+            c.close()
+        except sqlite3.OperationalError:
+            checker = False
+        try:
+            if checker[0][0] == username:
+                username_placeholder = 'Username not avalible'
+                return template('signup.tpl', user_text=username_placeholder)
+        except IndexError:
             conn = sqlite3.connect('acc_info.db')
             c = conn.cursor()
             c.execute("INSERT INTO acc_info (username,password) VALUES (?,?)", (username, password))
             conn.commit()
             c.close
+            user_database = os.path.join("user_db", f'{username}.db')
+            conn = sqlite3.connect(user_database) # Warning: This file is created in the current directory
+            conn.execute("CREATE TABLE todo (id INTEGER PRIMARY KEY, task char(100) NOT NULL, status bool NOT NULL, progress INTEGER NOT NULL)")
+
             return redirect('/')
     else:
         return template('signup.tpl', user_text=username_placeholder)
