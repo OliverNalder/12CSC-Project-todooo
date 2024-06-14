@@ -47,14 +47,14 @@ def signup():
 
 
         
-        try:
-            conn = sqlite3.connect('acc_info.db')
-            c = conn.cursor()
-            c.execute(f"SELECT username FROM acc_info WHERE username LIKE '{username}'")
-            checker = c.fetchall()
-            c.close()
-        except sqlite3.OperationalError:
-            checker = False
+        
+        conn = sqlite3.connect('acc_info.db')
+        c = conn.cursor()
+        c.execute(f"SELECT username FROM acc_info WHERE username LIKE '{username}'")
+        checker = c.fetchall()
+        c.close()
+        
+        
         try:
             if checker[0][0] == username:
                 username_placeholder = 'Username not avalible'
@@ -74,7 +74,47 @@ def signup():
         return template('signup.tpl', user_text=username_placeholder)
         
     
+@route('/login', method='GET')
+def login():
+    username_placeholder = 'Username:'
+    password_placeholder = 'Password:'
+    if request.GET.save:
+        username = request.GET.username.strip()
+        password = request.GET.password.strip()
 
+        
+        conn = sqlite3.connect('acc_info.db')
+        c = conn.cursor()
+        c.execute(f"SELECT username FROM acc_info WHERE username,password LIKE '{username},{password}'")
+        checker = c.fetchall()
+        c.close()
+
+        try:
+            if checker[0][0] == username:
+                username_placeholder = 'Invalid Username or Password'
+                password_placeholder = 'Invalid Username or Password'
+                return template('login.tpl', user_text=username_placeholder, password_text=password_placeholder)
+        except IndexError:
+            try:
+                conn = sqlite3.connect('acc_info.db')
+                c = conn.cursor()
+                c.execute(f"SELECT password FROM acc_info WHERE password LIKE '{password}'")
+                checker = c.fetchall()
+                c.close()
+            except sqlite3.OperationalError:
+                checker = False
+            try:
+                if checker[0][0] == password:
+                    username_placeholder = 'Invalid Username or Password'
+                    password_placeholder = 'Invalid Username or Password'
+                    return template('login.tpl', user_text=username_placeholder, password_text=password_placeholder)
+            except IndexError:
+                global current_user
+                current_user = username
+
+            return redirect('/')
+    else:
+        return template('login.tpl', user_text=username_placeholder, password_text=password_placeholder)
 
 @route('/new', method='GET')
 def new_item():
