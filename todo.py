@@ -17,7 +17,7 @@ def todo_list():
 
     conn = sqlite3.connect(f'user_db/{current_user}.db')
     c = conn.cursor()
-    c.execute("SELECT task, progress FROM todo WHERE status LIKE '1'")
+    c.execute("SELECT id, task, progress FROM todo WHERE status LIKE '1'")
     result = c.fetchall()
     print(result)
     c.close()

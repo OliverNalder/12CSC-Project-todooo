@@ -14,10 +14,10 @@
         <td>{{num}}</td>
 
         
-            <td>{{row[0]}}
+            <td>{{row[1]}}
             <form method="GET">
             <div class="slidecontainer">
-                <input type="range" min="0" max="4" value="{{row[1]}}" name="slider" class="slider" id="{{row[0]}}">
+                <input type="range" min="0" max="4" value="{{row[2]}}" name="slider" class="slider" id="{{row[0]}}">
             </div></td>
         </form>
         <td><a href='/edit/{{row[0]}}'>edit</a></td>
