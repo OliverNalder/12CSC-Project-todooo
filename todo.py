@@ -9,11 +9,21 @@ current_user = ''
 
 
 
-@route('/todo', method=["GET", "POST"])
+@route('/todo', method="GET")
 def todo_list():
 
 
-    
+    if request.GET.save:
+        print('hi')
+        order = request.GET.Order.strip()
+        if order == "asending":
+            new_order = ''
+            for i in range(len(result)):
+                new_order += result[-i]
+            print(new_order)
+        elif order == "desending":
+            new_order = result
+        output = template('make_table', rows=new_order)
 
     conn = sqlite3.connect(f'user_db/{current_user}.db')
     c = conn.cursor()
@@ -21,7 +31,9 @@ def todo_list():
     result = c.fetchall()
     c.close()
 
-    '''if request.GET.slider():
+    new_order = result
+
+    '''if request.GET.slider:
         new_value = request.GET.slider.strip()
         value_id = request.GET.slider.id()
         conn = sqlite3.connect('todo.db')
@@ -30,9 +42,22 @@ def todo_list():
         c.close()'''
     
 
-    output = template('make_table', rows=result)
+
+
+    output = template('make_table', rows=new_order)
     return output
 
+'''@route('/todo/<no:int>', method="GET")
+def delete(no): 
+    if request.GET.delete:
+        conn = sqlite3.connect(f'user_db/{current_user}.db')
+        c = conn.cursor()
+        c.execute("DELETE row FROM todo WHERE id LIKE ?", (no))
+        c.close()
+        return redirect('/todo')
+    return template('make_table', no=no)
+
+'''
 @route('/closed')
 def closed_list():
     conn = sqlite3.connect(f'user_db/{current_user}.db')
@@ -152,7 +177,13 @@ def edit_item(no):
         c.execute("UPDATE todo SET task = ?, status = ? WHERE id LIKE ?", (edit, status, no))
         conn.commit()
 
+        conn = sqlite3.connect(f'user_db/{current_user}.db')
+        c = conn.cursor()
+        c.execute("DELETE id FROM todo WHERE id LIKE ?", (no))
+        c.close()
+        conn.commit()
         return redirect('/todo')
+
     else:
         conn = sqlite3.connect(f'user_db/{current_user}.db')
         c = conn.cursor()
@@ -206,6 +237,8 @@ def mistake403(code):
 @error(404)
 def mistake404(code):
     return 'Sorry, this page does not exist!'
+
+
 
 @route('/')
 def main():

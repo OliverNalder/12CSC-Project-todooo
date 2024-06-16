@@ -2,6 +2,11 @@
 <link href='/static/style.css' rel='stylesheet'>
 <div class="help"><a href='/help'>?</a></div>
 <h1>ToDo List</h1>
+<select name="Order">
+    <option>desending</option>
+    <option>asending</option>
+</select>
+<input type="submit" name="save" value="save">
 <p>The open items are as follows:</p>
 %if rows != []:
     <table border="1">
@@ -21,6 +26,11 @@
             </div></td>
         </form>
         <td><a href='/edit/{{row[0]}}'>edit</a></td>
+        <td>
+        <form method="GET" action="/todo/{{row[0]}}>
+            <input type="submit" value="delete" name="delete">
+        </form>
+        </td>
         </tr>
     %end
     </table>

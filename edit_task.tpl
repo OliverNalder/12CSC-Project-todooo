@@ -8,6 +8,7 @@
         <option>open</option>
         <option>closed</option>
     </select>
+    <input type="submit" value="delete" name="delete">
     <br>
     <input type="submit" name="save" value="save">
 </form>
