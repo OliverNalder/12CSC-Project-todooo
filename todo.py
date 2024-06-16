@@ -19,7 +19,6 @@ def todo_list():
     c = conn.cursor()
     c.execute("SELECT id, task, progress FROM todo WHERE status LIKE '1'")
     result = c.fetchall()
-    print(result)
     c.close()
 
     '''if request.GET.slider():
@@ -96,7 +95,7 @@ def login():
         c = conn.cursor()
         c.execute("SELECT username FROM acc_info WHERE (username,password) = (?,?)", (username,password))
         checker = c.fetchall()
-        print(checker)
+        
         c.close()
 
         try:
