@@ -5,23 +5,29 @@ import os
 # only needed when you run Bottle on mod_wsgi
 from bottle import default_app
 
+current_user = ''
+
+
 
 @route('/todo', method=["GET", "POST"])
 def todo_list():
 
-    conn = sqlite3.connect('todo.db')
+
+    
+
+    conn = sqlite3.connect(f'user_db/{current_user}.db')
     c = conn.cursor()
     c.execute("SELECT id, task, progress FROM todo WHERE status LIKE '1'")
     result = c.fetchall()
     c.close()
 
-    if request.GET.slider():
+    '''if request.GET.slider():
         new_value = request.GET.slider.strip()
         value_id = request.GET.slider.id()
         conn = sqlite3.connect('todo.db')
         c = conn.cursor()
         c.execute("UPDATE todo SET progress ? WHERE id LIKE ?", (new_value, value_id))
-        c.close()
+        c.close()'''
     
 
     output = template('make_table', rows=result)
@@ -29,7 +35,7 @@ def todo_list():
 
 @route('/closed')
 def closed_list():
-    conn = sqlite3.connect('todo.db')
+    conn = sqlite3.connect(f'user_db/{current_user}.db')
     c = conn.cursor()
     c.execute("SELECT id, task FROM todo WHERE status LIKE '0'")
     result = c.fetchall()
@@ -47,14 +53,15 @@ def signup():
 
 
         
-        try:
-            conn = sqlite3.connect('acc_info.db')
-            c = conn.cursor()
-            c.execute(f"SELECT username FROM acc_info WHERE username LIKE '{username}'")
-            checker = c.fetchall()
-            c.close()
-        except sqlite3.OperationalError:
-            checker = False
+        
+        conn = sqlite3.connect('acc_info.db')
+        c = conn.cursor()
+        c.execute(f"SELECT username FROM acc_info WHERE username LIKE '{username}'")
+        checker = c.fetchall()
+        c.close()
+        
+
+        
         try:
             if checker[0][0] == username:
                 username_placeholder = 'Username not avalible'
@@ -74,7 +81,38 @@ def signup():
         return template('signup.tpl', user_text=username_placeholder)
         
     
+@route('/login', method='GET')
+def login():
+    
+    username_placeholder = 'Username:'
+    password_placeholder = 'Password:'
+    if request.GET.save:
+        username = request.GET.username.strip()
+        password = request.GET.password.strip()
 
+        
+        conn = sqlite3.connect('acc_info.db')
+        c = conn.cursor()
+        c.execute("SELECT username FROM acc_info WHERE (username,password) = (?,?)", (username,password))
+        checker = c.fetchall()
+        
+        c.close()
+
+        try:
+            if checker[0][0] == username:
+                global current_user
+                current_user = username
+                return redirect('/')
+
+        except IndexError:
+            username_placeholder = 'Invalid Username or Password'
+            password_placeholder = 'Invalid Username or Password'
+            return template('login.tpl', user_text=username_placeholder, password_text=password_placeholder)
+        
+          
+       
+    else:
+        return template('login.tpl', user_text=username_placeholder, password_text=password_placeholder)
 
 @route('/new', method='GET')
 def new_item():
@@ -82,7 +120,7 @@ def new_item():
     if request.GET.save:
 
         new = request.GET.task.strip()
-        conn = sqlite3.connect('todo.db')
+        conn = sqlite3.connect(f'user_db/{current_user}.db')
         c = conn.cursor()
 
         c.execute("INSERT INTO todo (task,status,progress) VALUES (?,?,?)", (new, 1, 0))
@@ -91,7 +129,7 @@ def new_item():
         conn.commit()
         c.close()
 
-        return '<p>The new task was inserted into the database, the ID is %s</p><a href="/todo">ToDo List</a>' % new_id
+        return redirect('/todo')
 
     else:
         return template('new_task.tpl')
@@ -109,14 +147,14 @@ def edit_item(no):
         else:
             status = 0
 
-        conn = sqlite3.connect('todo.db')
+        conn = sqlite3.connect(f'user_db/{current_user}.db')
         c = conn.cursor()
         c.execute("UPDATE todo SET task = ?, status = ? WHERE id LIKE ?", (edit, status, no))
         conn.commit()
 
-        return '<p>The item number %s was successfully updated</p>\n<a href="/todo">ToDo List</a>' % no
+        return redirect('/todo')
     else:
-        conn = sqlite3.connect('todo.db')
+        conn = sqlite3.connect(f'user_db/{current_user}.db')
         c = conn.cursor()
         c.execute("SELECT task FROM todo WHERE id LIKE ?", (str(no)))
         cur_data = c.fetchone()
@@ -127,7 +165,7 @@ def edit_item(no):
 @route('/item<item:re:[0-9]+>')
 def show_item(item):
 
-        conn = sqlite3.connect('todo.db')
+        conn = sqlite3.connect(f'user_db/{current_user}.db')
         c = conn.cursor()
         c.execute("SELECT task FROM todo WHERE id LIKE ?", (item,))
         result = c.fetchall()
@@ -148,7 +186,7 @@ def help():
 @route('/json<json:re:[0-9]+>')
 def show_json(json):
 
-    conn = sqlite3.connect('todo.db')
+    conn = sqlite3.connect(f'user_db/{current_user}.db')
     c = conn.cursor()
     c.execute("SELECT task FROM todo WHERE id LIKE ?", (json,))
     result = c.fetchall()
