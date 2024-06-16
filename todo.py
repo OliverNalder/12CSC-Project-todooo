@@ -55,6 +55,7 @@ def signup():
         c.close()
         
         
+        
         try:
             if checker[0][0] == username:
                 username_placeholder = 'Username not avalible'
