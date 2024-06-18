@@ -74,7 +74,7 @@ def signup():
             c.close
             user_database = os.path.join("user_db", f'{username}.db')
             conn = sqlite3.connect(user_database) # Warning: This file is created in the current directory
-            conn.execute("CREATE TABLE todo (id INTEGER PRIMARY KEY, task char(100) NOT NULL, status bool NOT NULL, progress INTEGER NOT NULL)")
+            conn.execute("CREATE TABLE todo (id INTEGER PRIMARY KEY, task char(100) NOT NULL, status bool NOT NULL, progress INTEGER NOT NULL, description STRING)")
 
             return redirect('/')
     else:
@@ -120,12 +120,13 @@ def new_item():
     if request.GET.save:
 
         new = request.GET.task.strip()
+        desc = request.GET.description.strip()
         conn = sqlite3.connect(f'user_db/{current_user}.db')
         c = conn.cursor()
 
-        c.execute("INSERT INTO todo (task,status,progress) VALUES (?,?,?)", (new, 1, 0))
+        c.execute("INSERT INTO todo (task,status,progress,description) VALUES (?,?,?,?)", (new, 1, 0, desc))
         new_id = c.lastrowid
-
+ 
         conn.commit()
         c.close()
 
@@ -141,6 +142,7 @@ def edit_item(no):
     if request.GET.save:
         edit = request.GET.task.strip()
         status = request.GET.status.strip()
+        desc = request.GET.description.strip()
 
         if status == 'open':
             status = 1
@@ -149,17 +151,18 @@ def edit_item(no):
 
         conn = sqlite3.connect(f'user_db/{current_user}.db')
         c = conn.cursor()
-        c.execute("UPDATE todo SET task = ?, status = ? WHERE id LIKE ?", (edit, status, no))
+        c.execute("UPDATE todo SET task = ?, status = ?, description = ? WHERE id LIKE ?", (edit, status, no, desc))
         conn.commit()
 
         return redirect('/todo')
     else:
         conn = sqlite3.connect(f'user_db/{current_user}.db')
         c = conn.cursor()
-        c.execute("SELECT task FROM todo WHERE id LIKE ?", (str(no)))
-        cur_data = c.fetchone()
+        c.execute("SELECT task,description FROM todo WHERE id LIKE ?", (str(no)))
+        cur_data = c.fetchall()
+        print(cur_data)
 
-        return template('edit_task', old=cur_data, no=no)
+        return template('edit_task', old=cur_data[0][0], no=no, old_desc=cur_data[0][1])
 
 
 @route('/item<item:re:[0-9]+>')

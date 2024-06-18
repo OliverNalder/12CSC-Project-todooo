@@ -3,11 +3,13 @@
 <link href='/static/style.css' rel='stylesheet'>
 <p>Edit the task with ID = {{no}}</p>
 <form action="/edit/{{no}}" method="get">
-    <input type="text" name="task" value="{{old[0]}}" size="100" maxlength="100">
+    <input type="text" name="task" value="{{old}}" size="100" maxlength="100">
     <select name="status">
         <option>open</option>
         <option>closed</option>
     </select>
+    <br>
+    <input type="text" size="100" name="description" placeholder="Description (Optional)" value="{{old_desc}}">
     <br>
     <input type="submit" name="save" value="save">
 </form>
