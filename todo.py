@@ -177,7 +177,7 @@ def edit_item(no):
         c.execute("UPDATE todo SET task = ?, status = ? WHERE id LIKE ?", (edit, status, no))
         conn.commit()
         c.close()
-        return template('edit_task', no=no)
+        return redirect('/todo')
 
     elif request.GET.delete:
         conn = sqlite3.connect(f'user_db/{current_user}.db')
@@ -185,7 +185,7 @@ def edit_item(no):
         c.execute("DELETE FROM todo WHERE id LIKE ?", (str(no)))
         c.close()
         conn.commit()
-        return template('edit_task', no=no)
+        return redirect('/todo')
 
     else:
         conn = sqlite3.connect(f'user_db/{current_user}.db')
