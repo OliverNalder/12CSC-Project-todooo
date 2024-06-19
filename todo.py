@@ -12,18 +12,28 @@ current_user = ''
 @route('/todo', method="GET")
 def todo_list():
 
+    order = "DESC"
 
+    if request.GET.save:
+        print('hi')
+        new_order = request.GET.Order.strip()
+        if new_order == "asending":
+            order = 'ASC'
+            
+        elif new_order == "descending":
+            order = "DESC"
+        output = template('make_table', rows=new_order)
 
 
     conn = sqlite3.connect(f'user_db/{current_user}.db')
     c = conn.cursor()
-    c.execute("SELECT id, task, progress FROM todo WHERE status LIKE '1'")
+    c.execute("SELECT id, task, progress FROM todo WHERE status LIKE '1' ORDER BY id ?", order,)
     result = c.fetchall()
     c.close()
 
     new_order = result
 
-    if request.GET.save:
+    if request.GET.progress_save:
         
         new_value = request.GET.slider.strip()
         new_id = request.GET.value_id.strip()

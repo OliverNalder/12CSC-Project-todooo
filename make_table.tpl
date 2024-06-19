@@ -25,7 +25,7 @@
                 <input type="range" min="0" max="8" value="{{row[2]}}" name="slider" class="slider" id=myRange>
             </div>
             
-            <input type="submit" value="save" name="save">
+            <input type="submit" value="progress_save" name="save">
             <input type="hidden" value="{{row[0]}}" name="value_id">
             </td>
             

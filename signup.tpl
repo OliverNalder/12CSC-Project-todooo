@@ -8,8 +8,8 @@
 <body>
     <h1>Create Account:</h1>
     <form action="/signup" method="GET">
-        <input type="text" size="100" maxlength="100" placeholder="{{user_text}}" name="username">
-        <input type="password" size="100" maxlength="100" minlength="8" placeholder="Password:" name="password">
+        <input type="text" size="100" maxlength="100" placeholder="{{user_text}}" name="username" required>
+        <input type="password" size="100" maxlength="100" minlength="8" placeholder="Password:" name="password" required>
         <input type="submit" name="save" value="save">
     </form>
 </body>
