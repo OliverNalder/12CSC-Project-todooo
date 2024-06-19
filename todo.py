@@ -13,17 +13,7 @@ current_user = ''
 def todo_list():
 
 
-    if request.GET.save:
-        print('hi')
-        order = request.GET.Order.strip()
-        if order == "asending":
-            new_order = ''
-            for i in range(len(result)):
-                new_order += result[-i]
-            print(new_order)
-        elif order == "desending":
-            new_order = result
-        output = template('make_table', rows=new_order)
+
 
     conn = sqlite3.connect(f'user_db/{current_user}.db')
     c = conn.cursor()
@@ -33,13 +23,19 @@ def todo_list():
 
     new_order = result
 
-    '''if request.GET.slider:
+    if request.GET.save:
+        
         new_value = request.GET.slider.strip()
-        value_id = request.GET.slider.id()
-        conn = sqlite3.connect('todo.db')
+        new_id = request.GET.value_id.strip()
+        print(new_value, new_id)
+        
+        conn = sqlite3.connect(f'user_db/{current_user}.db')
         c = conn.cursor()
-        c.execute("UPDATE todo SET progress ? WHERE id LIKE ?", (new_value, value_id))
-        c.close()'''
+        c.execute("UPDATE todo SET progress = ? WHERE id LIKE ?", (new_value, new_id))
+        conn.commit()
+        c.close()
+
+        return redirect('/todo')
     
 
 

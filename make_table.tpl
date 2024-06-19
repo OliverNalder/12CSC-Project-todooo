@@ -22,16 +22,16 @@
             <td>{{row[1]}}
             <form method="GET">
             <div class="slidecontainer">
-                <input type="range" min="0" max="4" value="{{row[2]}}" name="slider" class="slider" id="{{row[0]}}">
-            </div></td>
+                <input type="range" min="0" max="8" value="{{row[2]}}" name="slider" class="slider" id=myRange>
+            </div>
+            
+            <input type="submit" value="save" name="save">
+            <input type="hidden" value="{{row[0]}}" name="value_id">
+            </td>
             
         </form>
         <td><a href='/edit/{{row[0]}}'>edit</a></td>
-        <td>
-        <form method="GET" action="/todo/{{row[0]}}>
-            <input type="submit" value="delete" name="delete">
-        </form>
-        </td>
+
         </tr>
     %end
     </table>
