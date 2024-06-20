@@ -13,21 +13,26 @@ current_user = ''
 def todo_list():
 
     order = "DESC"
+    sort_by = 'task'
 
     if request.GET.save:
         print('hi')
         new_order = request.GET.Order.strip()
+        sort_by = request.GET.Sort_By.strip()
         if new_order == "asending":
             order = 'ASC'
             
         elif new_order == "descending":
             order = "DESC"
-        output = template('make_table', rows=new_order)
+
+        if sort_by == "name":
+            sort_by = "task"
+        
 
 
     conn = sqlite3.connect(f'user_db/{current_user}.db')
     c = conn.cursor()
-    c.execute("SELECT id, task, progress FROM todo WHERE status LIKE '1' ORDER BY id ?", order,)
+    c.execute(f"SELECT id, task, progress FROM todo WHERE status LIKE '1' ORDER BY {sort_by} COLLATE NOCASE {order}")
     result = c.fetchall()
     c.close()
 
@@ -50,20 +55,10 @@ def todo_list():
 
 
 
-    output = template('make_table', rows=new_order)
+    output = template('make_table', rows=result)
     return output
 
-'''@route('/todo/<no:int>', method="GET")
-def delete(no): 
-    if request.GET.delete:
-        conn = sqlite3.connect(f'user_db/{current_user}.db')
-        c = conn.cursor()
-        c.execute("DELETE row FROM todo WHERE id LIKE ?", (no))
-        c.close()
-        return redirect('/todo')
-    return template('make_table', no=no)
 
-'''
 @route('/closed')
 def closed_list():
     conn = sqlite3.connect(f'user_db/{current_user}.db')

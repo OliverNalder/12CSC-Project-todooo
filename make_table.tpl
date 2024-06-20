@@ -2,11 +2,20 @@
 <link href='/static/style.css' rel='stylesheet'>
 <div class="help"><a href='/help'>?</a></div>
 <h1>ToDo List</h1>
-<select name="Order">
-    <option>desending</option>
-    <option>asending</option>
-</select>
-<input type="submit" name="save" value="save">
+<form method="GET">
+    <select name="Sort_By">
+        <option selected disabled hidden>Sort By:</option>
+        <option>name</option>
+        <option>priority</option>
+        <option>progress</option>
+    </select>
+    <select name="Order" placeholder="Order">
+        <option selected disabled hidden>Order:</option>
+        <option>descending</option>
+        <option>asending</option>
+    </select>
+    <input type="submit" name="save" value="save">
+</form>
 <p>The open items are as follows:</p>
 %if rows != []:
     <table border="1">
@@ -25,7 +34,7 @@
                 <input type="range" min="0" max="8" value="{{row[2]}}" name="slider" class="slider" id=myRange>
             </div>
             
-            <input type="submit" value="progress_save" name="save">
+            <input type="submit" value="save" name="progress_save">
             <input type="hidden" value="{{row[0]}}" name="value_id">
             </td>
             
