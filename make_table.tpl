@@ -12,7 +12,7 @@
     <select name="Order" placeholder="Order">
         <option selected disabled hidden>Order:</option>
         <option>descending</option>
-        <option>asending</option>
+        <option>ascending</option>
     </select>
     <input type="submit" name="save" value="save">
 </form>
