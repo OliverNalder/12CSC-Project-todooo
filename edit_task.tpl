@@ -8,6 +8,9 @@
         <option>open</option>
         <option>closed</option>
     </select>
+    <input type="submit" value="delete" name="delete">
+    <br>
+    <input type="text" size="100" name="description" placeholder="Description (Optional)" value="{{old_desc}}">
     <br>
     <input type="submit" name="save" value="save">
 </form>

@@ -6,29 +6,51 @@ import os
 from bottle import default_app
 
 current_user = ''
+order = 'ASC'
+sort_by = 'task'
 
 
-
-@route('/todo', method=["GET", "POST"])
+@route('/todo', method="GET")
 def todo_list():
 
+    global order, sort_by #saved as global to save between websites
+
+
+    if request.GET.save:
+        new_order = request.GET.Order.strip()
+        new_sort_by = request.GET.Sort_By.strip()
+
+        if new_order == 'ascending':
+            order = 'ASC'
+
+        else:
+            order = 'DESC'
+
+        if new_sort_by == 'name':
+            sort_by = 'task'
+        elif new_sort_by != '':
+            sort_by = new_sort_by
 
     
 
     conn = sqlite3.connect(f'user_db/{current_user}.db')
     c = conn.cursor()
-    c.execute("SELECT id, task, progress FROM todo WHERE status LIKE '1'")
+    c.execute(f"SELECT id, task, progress FROM todo WHERE status LIKE '1' ORDER BY {str(sort_by)} COLLATE NOCASE {str(order)}")
     result = c.fetchall()
     c.close()
 
-    '''if request.GET.slider():
+    new_order = result
+
+    if request.GET.progress_save:
         new_value = request.GET.slider.strip()
-        value_id = request.GET.slider.id()
-        conn = sqlite3.connect('todo.db')
+        new_id = request.GET.value_id.strip()
+        conn = sqlite3.connect(f'user_db/{current_user}.db')
         c = conn.cursor()
-        c.execute("UPDATE todo SET progress ? WHERE id LIKE ?", (new_value, value_id))
-        c.close()'''
-    
+        c.execute("UPDATE todo SET progress = ? WHERE id LIKE ?", (new_value, new_id))
+        conn.commit()
+        c.close()
+
+        return redirect('/todo')
 
     output = template('make_table', rows=result)
     return output
@@ -74,7 +96,7 @@ def signup():
             c.close
             user_database = os.path.join("user_db", f'{username}.db')
             conn = sqlite3.connect(user_database) # Warning: This file is created in the current directory
-            conn.execute("CREATE TABLE todo (id INTEGER PRIMARY KEY, task char(100) NOT NULL, status bool NOT NULL, progress INTEGER NOT NULL)")
+            conn.execute("CREATE TABLE todo (id INTEGER PRIMARY KEY, task char(100) NOT NULL, status bool NOT NULL, progress INTEGER NOT NULL, description STRING)")
 
             return redirect('/')
     else:
@@ -120,10 +142,11 @@ def new_item():
     if request.GET.save:
 
         new = request.GET.task.strip()
+        desc = request.GET.description.strip()
         conn = sqlite3.connect(f'user_db/{current_user}.db')
         c = conn.cursor()
 
-        c.execute("INSERT INTO todo (task,status,progress) VALUES (?,?,?)", (new, 1, 0))
+        c.execute("INSERT INTO todo (task,status,progress,description) VALUES (?,?,?,?)", (new, 1, 0, desc))
         new_id = c.lastrowid
 
         conn.commit()
@@ -141,6 +164,8 @@ def edit_item(no):
     if request.GET.save:
         edit = request.GET.task.strip()
         status = request.GET.status.strip()
+        desc = request.GET.description.strip()
+
 
         if status == 'open':
             status = 1
@@ -149,17 +174,29 @@ def edit_item(no):
 
         conn = sqlite3.connect(f'user_db/{current_user}.db')
         c = conn.cursor()
-        c.execute("UPDATE todo SET task = ?, status = ? WHERE id LIKE ?", (edit, status, no))
+        c.execute("UPDATE todo SET task = ?, status = ?, description = ? WHERE id LIKE ?", (edit, status, desc, no))
         conn.commit()
+        c.close()
+        
 
         return redirect('/todo')
+    
+    elif request.GET.delete:
+        conn = sqlite3.connect(f'user_db/{current_user}.db')
+        c = conn.cursor()
+        c.execute("DELETE FROM todo WHERE id LIKE ?", (str(no)))
+        c.close()
+        conn.commit()
+        return redirect('/todo')
+    
     else:
         conn = sqlite3.connect(f'user_db/{current_user}.db')
         c = conn.cursor()
-        c.execute("SELECT task FROM todo WHERE id LIKE ?", (str(no)))
+        c.execute("SELECT task,description FROM todo WHERE id LIKE ?", (str(no)))
         cur_data = c.fetchone()
+        c.close()
 
-        return template('edit_task', old=cur_data, no=no)
+        return template('edit_task', old=cur_data[0][0], no=no, old_desc=cur_data[0][1])
 
 
 @route('/item<item:re:[0-9]+>')
@@ -176,6 +213,16 @@ def show_item(item):
         else:
             return 'Task: %s' % result[0]
 
+@route('/view/<no:int>')
+def view_item(no):
+    conn = sqlite3.connect(f'user_db/{current_user}.db')
+    c = conn.cursor()
+    c.execute("SELECT task, status, progress, description FROM todo WHERE id LIKE ?", (str(no)))
+    info = c.fetchall()
+    print(info)
+
+    c.close()
+    return template('viewer', no=no, task=info[0][0], status=info[0][1], progress=info[0][2], description=info[0][3])
 
 @route('/help')
 def help():
@@ -206,6 +253,8 @@ def mistake403(code):
 @error(404)
 def mistake404(code):
     return 'Sorry, this page does not exist!'
+
+
 
 @route('/')
 def main():
