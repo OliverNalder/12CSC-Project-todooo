@@ -17,7 +17,6 @@ def todo_list():
 
 
     if request.GET.save:
-        print('hi')
         new_order = request.GET.Order.strip()
         new_sort_by = request.GET.Sort_By.strip()
         
@@ -31,7 +30,6 @@ def todo_list():
             sort_by = 'task'
         elif new_sort_by != '':
             sort_by = new_sort_by
-        print(sort_by, order)
         
         
 
@@ -49,7 +47,6 @@ def todo_list():
         
         new_value = request.GET.slider.strip()
         new_id = request.GET.value_id.strip()
-        print(new_value, new_id)
         
         conn = sqlite3.connect(f'user_db/{current_user}.db')
         c = conn.cursor()
@@ -92,7 +89,6 @@ def signup():
         c.execute(f"SELECT username FROM acc_info WHERE username LIKE '{username}'")
         checker = c.fetchall()
         c.close()
-        
 
         
         try:
