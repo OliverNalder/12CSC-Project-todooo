@@ -3,7 +3,7 @@
 <link href='/static/style.css' rel='stylesheet'>
 <p>Edit the task with ID = {{no}}</p>
 <form action="/edit/{{no}}" method="get">
-    <input type="text" name="task" value="{{old}}" size="100" maxlength="100">
+    <input type="text" name="task" value="{{old[0]}}" size="100" maxlength="100">
     <select name="status">
         <option>open</option>
         <option>closed</option>
