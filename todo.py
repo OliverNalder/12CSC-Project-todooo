@@ -143,6 +143,7 @@ def edit_item(no):
         edit = request.GET.task.strip()
         status = request.GET.status.strip()
         desc = request.GET.description.strip()
+        print(edit, status, desc)
 
         if status == 'open':
             status = 1
@@ -151,9 +152,9 @@ def edit_item(no):
 
         conn = sqlite3.connect(f'user_db/{current_user}.db')
         c = conn.cursor()
-        c.execute("UPDATE todo SET task = ?, status = ?, description = ? WHERE id LIKE ?", (edit, status, no, desc))
+        c.execute("UPDATE todo SET task = ?, status = ?, description = ? WHERE id LIKE ?", (edit, status, desc, no))
         conn.commit()
-
+        c.close()
         return redirect('/todo')
     else:
         conn = sqlite3.connect(f'user_db/{current_user}.db')
@@ -161,7 +162,7 @@ def edit_item(no):
         c.execute("SELECT task,description FROM todo WHERE id LIKE ?", (str(no)))
         cur_data = c.fetchall()
         print(cur_data)
-
+        c.close()
         return template('edit_task', old=cur_data[0][0], no=no, old_desc=cur_data[0][1])
 
 
@@ -179,6 +180,18 @@ def show_item(item):
         else:
             return 'Task: %s' % result[0]
 
+@route('/view/<no:int>')
+def view_item(no):
+    conn = sqlite3.connect(f'user_db/{current_user}.db')
+    c = conn.cursor()
+    c.execute("SELECT task, status, progress, description FROM todo WHERE id LIKE ?", (no))
+    task, status, progress, description = c.fetchall()
+    print(task)
+    print(status)
+    print(progress)
+    print(description)
+    c.close()
+    return template('viewer', no=no, task=task, status=status, progress=progress, description=description)
 
 @route('/help')
 def help():

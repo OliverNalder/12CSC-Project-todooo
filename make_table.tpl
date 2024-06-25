@@ -20,6 +20,7 @@
                 <input type="range" min="0" max="4" value="{{row[2]}}" name="slider" class="slider" id="{{row[0]}}">
             </div></td>
         </form>
+        <td><a href='/view/{{row[0]}}'>View</a></td>
         <td><a href='/edit/{{row[0]}}'>edit</a></td>
         </tr>
     %end
