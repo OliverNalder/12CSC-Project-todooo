@@ -184,14 +184,12 @@ def show_item(item):
 def view_item(no):
     conn = sqlite3.connect(f'user_db/{current_user}.db')
     c = conn.cursor()
-    c.execute("SELECT task, status, progress, description FROM todo WHERE id LIKE ?", (no))
-    task, status, progress, description = c.fetchall()
-    print(task)
-    print(status)
-    print(progress)
-    print(description)
+    c.execute("SELECT task, status, progress, description FROM todo WHERE id LIKE ?", (str(no)))
+    info = c.fetchall()
+    print(info)
+
     c.close()
-    return template('viewer', no=no, task=task, status=status, progress=progress, description=description)
+    return template('viewer', no=no, task=info[0][0], status=info[0][1], progress=info[0][2], description=info[0][3])
 
 @route('/help')
 def help():

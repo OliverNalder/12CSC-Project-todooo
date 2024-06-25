@@ -6,6 +6,7 @@
     <title>Task Viewer</title>
 </head>
 <body>
-    
+    %progress == progress * 12.5
+    <p>{{no}}{{task}}{{status}}{{progress}}{{description}}</p>
 </body>
 </html>
