@@ -6,7 +6,8 @@
     <title>Task Viewer</title>
 </head>
 <body>
-    %progress == progress * 12.5
-    <p>{{no}}{{task}}{{status}}{{progress}}{{description}}</p>
+    <h1>Viewing Task with id #{{no}}</h1>
+    <h3>Currently {{status}}</h3>
+    <p>{{task}}{{int(progress) * 12.5}}{{description}}</p>
 </body>
 </html>

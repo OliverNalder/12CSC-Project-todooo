@@ -13,47 +13,50 @@ sort_by = 'task'
 @route('/todo', method="GET")
 def todo_list():
 
-    global order, sort_by #saved as global to save between websites
+    if current_user == '':
+        return redirect('/login')
+    else:
+        global order, sort_by #saved as global to save between websites
 
 
-    if request.GET.save:
-        new_order = request.GET.Order.strip()
-        new_sort_by = request.GET.Sort_By.strip()
+        if request.GET.save:
+            new_order = request.GET.Order.strip()
+            new_sort_by = request.GET.Sort_By.strip()
 
-        if new_order == 'ascending':
-            order = 'ASC'
+            if new_order == 'ascending':
+                order = 'ASC'
 
-        else:
-            order = 'DESC'
+            else:
+                order = 'DESC'
 
-        if new_sort_by == 'name':
-            sort_by = 'task'
-        elif new_sort_by != '':
-            sort_by = new_sort_by
+            if new_sort_by == 'name':
+                sort_by = 'task'
+            elif new_sort_by != '':
+                sort_by = new_sort_by
 
-    
+        
 
-    conn = sqlite3.connect(f'user_db/{current_user}.db')
-    c = conn.cursor()
-    c.execute(f"SELECT id, task, progress FROM todo WHERE status LIKE '1' ORDER BY {str(sort_by)} COLLATE NOCASE {str(order)}")
-    result = c.fetchall()
-    c.close()
-
-    new_order = result
-
-    if request.GET.progress_save:
-        new_value = request.GET.slider.strip()
-        new_id = request.GET.value_id.strip()
         conn = sqlite3.connect(f'user_db/{current_user}.db')
         c = conn.cursor()
-        c.execute("UPDATE todo SET progress = ? WHERE id LIKE ?", (new_value, new_id))
-        conn.commit()
+        c.execute(f"SELECT id, task, progress FROM todo WHERE status LIKE '1' ORDER BY {str(sort_by)} COLLATE NOCASE {str(order)}")
+        result = c.fetchall()
         c.close()
 
-        return redirect('/todo')
+        new_order = result
 
-    output = template('make_table', rows=result)
-    return output
+        if request.GET.progress_save:
+            new_value = request.GET.slider.strip()
+            new_id = request.GET.value_id.strip()
+            conn = sqlite3.connect(f'user_db/{current_user}.db')
+            c = conn.cursor()
+            c.execute("UPDATE todo SET progress = ? WHERE id LIKE ?", (new_value, new_id))
+            conn.commit()
+            c.close()
+
+            return redirect('/todo')
+
+        output = template('make_table', rows=result)
+        return output
 
 @route('/closed')
 def closed_list():
@@ -196,7 +199,7 @@ def edit_item(no):
         cur_data = c.fetchone()
         c.close()
 
-        return template('edit_task', old=cur_data[0][0], no=no, old_desc=cur_data[0][1])
+        return template('edit_task', old=cur_data[0], no=no, old_desc=cur_data[1])
 
 
 @route('/item<item:re:[0-9]+>')
@@ -220,9 +223,13 @@ def view_item(no):
     c.execute("SELECT task, status, progress, description FROM todo WHERE id LIKE ?", (str(no)))
     info = c.fetchall()
     print(info)
+    if info[0][1] == '1':
+        status = "Open"
+    else:
+        status = "Closed"
 
     c.close()
-    return template('viewer', no=no, task=info[0][0], status=info[0][1], progress=info[0][2], description=info[0][3])
+    return template('viewer', no=no, task=info[0][0], status=status, progress=info[0][2], description=info[0][3])
 
 @route('/help')
 def help():

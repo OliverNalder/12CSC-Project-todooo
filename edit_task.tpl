@@ -3,14 +3,14 @@
 <link href='/static/style.css' rel='stylesheet'>
 <p>Edit the task with ID = {{no}}</p>
 <form action="/edit/{{no}}" method="get">
-    <input type="text" name="task" value="{{old[0]}}" size="100" maxlength="100">
+    <input type="text" name="task" value="{{old}}" size="100" maxlength="100">
     <select name="status">
         <option>open</option>
         <option>closed</option>
     </select>
     <input type="submit" value="delete" name="delete">
     <br>
-    <input type="text" size="100" name="description" placeholder="Description (Optional)" value="{{old_desc}}">
+    <textarea id="description" name="description" rows="4" cols="50" placeholder="Description (Optional)">{{old_desc}}</textarea>
     <br>
     <input type="submit" name="save" value="save">
 </form>
