@@ -18,7 +18,7 @@ p {
     text-align: center;
 }
 
-a, a:visited {
+a, a:visited, button {
     color: rgb(26, 106, 131);
     padding: 15px;
     background-color: rgb(157, 210, 227);
@@ -30,9 +30,10 @@ a, a:visited {
     text-align: center;
 }
 
-a:hover {
+a:hover, input[type=submit]:hover {
     color: rgb(157, 210, 227);
     background-color: rgb(26, 106, 131);
+    cursor: pointer;
 }
 
 td {
@@ -58,17 +59,67 @@ table {
     margin-bottom: -55px;
 }
 
-input, select {
+.progress_container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: -35px;
+}
+
+.task_name {
+    margin-bottom: -15px;
+    margin-top: -10px;
+}
+
+.slider_save input[type=submit] {
+    font-size: 15px;
+    font-weight: bold;
+    padding-top: 4px;
+    padding-bottom: 4px;
+}
+
+.slidecontainer {
+    flex-grow: 1;
+    margin-right: 10px;
+    margin-bottom: -25px;
+}
+
+.progress_value p {
+    font-size: 12px;
     color: rgb(26, 106, 131);
-    padding: 8px;
+    margin-left: 0px;
+    margin-bottom: -22px;
+    text-align: left;
+    
+}
+
+.slider {
+    width: 100%;
+}
+
+input, select, input[type=text]::placeholder, input[type=password]::placeholder, textarea {
+    color: rgb(26, 106, 131);
+    padding-top: 8px;
+    padding-bottom: 8px;
     background-color: rgb(157, 210, 227);
     border-radius: 5px;
-    margin-left: 17px;
+    margin-left: auto;
+    margin-right: auto;
     font-size: 25px;
     margin-top: 15px;
-    margin: auto;
-    text-align: center;
+    width: auto;
+
+    
+}
+
+.left_title h1 {
+    text-align: left;
 }
 
 
 
+.sorting {
+    text-align: center;
+    align-items: center;
+
+}

@@ -1,6 +1,7 @@
 import sqlite3
 from bottle import route, run, debug, template, request, static_file, error, redirect
 import os
+import bcrypt
 
 # only needed when you run Bottle on mod_wsgi
 from bottle import default_app
@@ -26,7 +27,7 @@ def todo_list():
             if new_order == 'ascending':
                 order = 'ASC'
 
-            else:
+            elif new_order == 'descending':
                 order = 'DESC'
 
             if new_sort_by == 'name':
@@ -49,8 +50,13 @@ def todo_list():
             new_id = request.GET.value_id.strip()
             conn = sqlite3.connect(f'user_db/{current_user}.db')
             c = conn.cursor()
-            c.execute("UPDATE todo SET progress = ? WHERE id LIKE ?", (new_value, new_id))
-            conn.commit()
+            if new_value == '8':
+                c.execute("UPDATE todo SET progress = ?, status = ? WHERE id LIKE ?", (0, 0, new_id))
+                conn.commit()
+            else:
+                c.execute("UPDATE todo SET progress = ? WHERE id LIKE ?", (new_value, new_id))
+                conn.commit()
+            
             c.close()
 
             return redirect('/todo')
@@ -74,10 +80,7 @@ def signup():
     username_placeholder = 'Username:'
     if request.GET.save:
         username = request.GET.username.strip()
-        password = request.GET.password.strip()
 
-
-        
         
         conn = sqlite3.connect('acc_info.db')
         c = conn.cursor()
@@ -94,7 +97,7 @@ def signup():
         except IndexError:
             conn = sqlite3.connect('acc_info.db')
             c = conn.cursor()
-            c.execute("INSERT INTO acc_info (username,password) VALUES (?,?)", (username, password))
+            c.execute("INSERT INTO acc_info (username,password) VALUES (?,?)", (username, bcrypt.hashpw(request.GET.password.strip().encode('utf-8'), bcrypt.gensalt())))
             conn.commit()
             c.close
             user_database = os.path.join("user_db", f'{username}.db')
@@ -115,19 +118,24 @@ def login():
         username = request.GET.username.strip()
         password = request.GET.password.strip()
 
+        userBytes = password.encode('utf-8')
         
         conn = sqlite3.connect('acc_info.db')
         c = conn.cursor()
-        c.execute("SELECT username FROM acc_info WHERE (username,password) = (?,?)", (username,password))
+        c.execute("SELECT username,password FROM acc_info WHERE username = ?", (username,))
         checker = c.fetchall()
         
         c.close()
-
         try:
-            if checker[0][0] == username:
+            if bcrypt.checkpw(userBytes, checker[0][1]):
+
                 global current_user
                 current_user = username
                 return redirect('/')
+            else:
+                username_placeholder = 'Invalid Username or Password'
+                password_placeholder = 'Invalid Username or Password'
+                return template('login.tpl', user_text=username_placeholder, password_text=password_placeholder)
 
         except IndexError:
             username_placeholder = 'Invalid Username or Password'

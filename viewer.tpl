@@ -8,6 +8,6 @@
 <body>
     <h1>Viewing Task with id #{{no}}</h1>
     <h3>Currently {{status}}</h3>
-    <p>{{task}}{{int(progress) * 12.5}}{{description}}</p>
+    <p>{{task}}{{int(progress) * 12.5}}%{{description}}</p>
 </body>
 </html>

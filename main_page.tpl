@@ -7,7 +7,7 @@
     <link href='/static/style.css' rel='stylesheet'>
 </head>
 <body>
-    <a href='/signup'><button type='button'>Signup</button></a>
+    <a href='/signup'><button type='button'>Sign up</button></a>
     <a href='/login'><button type='button'>Login</button></a>
     <h1>Main Page</h1>
     <a href='/todo'>ToDo list</a>
