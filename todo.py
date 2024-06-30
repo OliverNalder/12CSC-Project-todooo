@@ -64,6 +64,25 @@ def todo_list():
         output = template('make_table', rows=result)
         return output
 
+    
+@route('/archive_all/<no:int>')
+def archive_all(no):
+    if no == 0:
+        conn = sqlite3.connect(f'user_db/{current_user}.db')
+        c = conn.cursor()
+        c.execute("UPDATE todo SET status = 0 WHERE status = 1")
+        conn.commit()
+        c.close()
+        return redirect('/todo')
+    elif no == 1:
+        conn = sqlite3.connect(f'user_db/{current_user}.db')
+        c = conn.cursor()
+        c.execute("UPDATE todo SET status = 1 WHERE status = 0")
+        conn.commit()
+        c.close()
+        return redirect('/todo')
+
+
 @route('/closed')
 def closed_list():
     conn = sqlite3.connect(f'user_db/{current_user}.db')
