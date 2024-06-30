@@ -83,7 +83,9 @@
     <td>
     <a href='/new' border='1'>New Task</a>
     </td>
-    
+    <td>
+    <a href='/closed' border='1'>Archived</a>
+    </td>
 
     </table>
 
