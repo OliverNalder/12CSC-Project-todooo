@@ -23,5 +23,8 @@
     <td>
     <a href='/todo'>Back</a>
     </td>
+    <td>
+    <a href='/archive_all/1'>Unarchive all</a>
+    </td>
 
 </table>
