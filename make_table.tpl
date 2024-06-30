@@ -18,8 +18,9 @@
         <input type="submit" name="save" value="save">
     </form>
 </div>
-<p>The open items are as follows:</p>
+
 %if rows != []:
+    <p>The open items are as follows:</p>
     <table border="1">
     %num = 0
 
@@ -67,6 +68,9 @@
     </td>
     <td>
     <a href='/closed' border='1'>Archived</a>
+    </td>
+    <td>
+    <a href='/archive_all/0'>Archive all</a>
     </td>
 
     </table>
