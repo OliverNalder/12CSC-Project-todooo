@@ -13,6 +13,15 @@
         <br>
         <textarea id="description" name="description" rows="8" cols="100" placeholder="Description (Optional)"></textarea>
         <br>
+            <p>Priority:</p>
+            <select name="priority">
+            <option value="0">Low</option>
+            <option value="1">Medium</option>
+            <option value="2">High</option>
+            </select>
+        <br>
+            <input type="date" name="due_date" value="{{date}}" min="{{date}}">
+        <br>
         <input type="submit" name="save" value="save">
         <a href='/todo'>Back</a>
     </form>
