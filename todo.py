@@ -3,6 +3,7 @@ from bottle import route, run, debug, template, request, static_file, error, red
 import os
 import bcrypt
 import re
+import datetime
 
 # only needed when you run Bottle on mod_wsgi
 from bottle import default_app
@@ -10,6 +11,8 @@ from bottle import default_app
 current_user = ''
 order = 'ASC'
 sort_by = 'task'
+current_date = datetime.datetime.now()
+current_date = f"{current_date.strftime("%Y")}-{current_date.strftime("%m")}-{current_date.strftime("%d")}"
 
 
 @route('/todo', method="GET")
@@ -122,7 +125,7 @@ def signup():
             c.close
             user_database = os.path.join("user_db", f'{username}.db')
             conn = sqlite3.connect(user_database) # Warning: This file is created in the current directory
-            conn.execute("CREATE TABLE todo (id INTEGER PRIMARY KEY, task char(100) NOT NULL, status bool NOT NULL, progress INTEGER NOT NULL, description STRING)")
+            conn.execute("CREATE TABLE todo (id INTEGER PRIMARY KEY, task char(100) NOT NULL, status bool NOT NULL, progress INTEGER NOT NULL, description STRING, priority STRING, created DATE, due DATE)")
             global current_user
             current_user = username
             return redirect('/')
@@ -210,15 +213,18 @@ def delete_account():
 
 @route('/new', method='GET')
 def new_item():
-
+    global current_date
+    
     if request.GET.save:
 
         new = request.GET.task.strip()
         desc = request.GET.description.strip()
+        priority = request.GET.priority.strip()
+        due_date = request.GET.due_date.strip()
         conn = sqlite3.connect(f'user_db/{current_user}.db')
         c = conn.cursor()
 
-        c.execute("INSERT INTO todo (task,status,progress,description) VALUES (?,?,?,?)", (new, 1, 0, desc))
+        c.execute("INSERT INTO todo (task,status,progress,description,priority,created,due) VALUES (?,?,?,?,?,?,?)", (new, 1, 0, desc, priority,current_date,due_date))
         new_id = c.lastrowid
 
         conn.commit()
@@ -227,7 +233,7 @@ def new_item():
         return redirect('/todo')
 
     else:
-        return template('new_task.tpl')
+        return template('new_task.tpl', date=current_date)
 
 
 @route('/edit/<no:int>', method='GET')
@@ -237,7 +243,8 @@ def edit_item(no):
         edit = request.GET.task.strip()
         status = request.GET.status.strip()
         desc = request.GET.description.strip()
-
+        priority = request.GET.priority.strip()
+        due_date = request.GET.due_date.strip()
 
         if status == 'open':
             status = 1
@@ -246,7 +253,7 @@ def edit_item(no):
 
         conn = sqlite3.connect(f'user_db/{current_user}.db')
         c = conn.cursor()
-        c.execute("UPDATE todo SET task = ?, status = ?, description = ? WHERE id LIKE ?", (edit, status, desc, no))
+        c.execute("UPDATE todo SET task = ?, status = ?, description = ?, priority = ?, due = ? WHERE id LIKE ?", (edit, status, desc, priority, due_date, no))
         conn.commit()
         c.close()
         
@@ -264,11 +271,18 @@ def edit_item(no):
     else:
         conn = sqlite3.connect(f'user_db/{current_user}.db')
         c = conn.cursor()
-        c.execute("SELECT task,description FROM todo WHERE id LIKE ?", (str(no)))
+        c.execute("SELECT task,description,priority,created,due FROM todo WHERE id LIKE ?", (str(no)))
         cur_data = c.fetchone()
         c.close()
 
-        return template('edit_task', old=cur_data[0], no=no, old_desc=cur_data[1])
+        if cur_data[2] == 0:
+            old_priority = "Low"
+        elif cur_data[2] == 1:
+            old_priority = "Medium"
+        else:
+            old_priority = "High"
+
+        return template('edit_task', old=cur_data[0], no=no, old_desc=cur_data[1], old_priority=old_priority, created=cur_data[3], old_due=cur_data[4])
 
 
 @route('/item<item:re:[0-9]+>')
