@@ -12,5 +12,14 @@
     <br>
     <textarea id="description" name="description" rows="4" cols="50" placeholder="Description (Optional)">{{old_desc}}</textarea>
     <br>
+        <select name="priority">
+        <option selected disabled hidden>{{old_priority}}</option>
+        <option value="0">Low</option>
+        <option value="1">Medium</option>
+        <option value="2">High</option>
+        </select>
+    <br>
+        <input type="date" name="due_date" value="{{old_due}}" min="{{created}}">
+    <br>
     <input type="submit" name="save" value="save">
 </form>
