@@ -9,6 +9,7 @@
             <option>name</option>
             <option>priority</option>
             <option>progress</option>
+            <option value="due">Due Date</option>
         </select>
         <select name="Order" placeholder="Order">
             <option selected disabled hidden>Order:</option>
@@ -49,7 +50,9 @@
                     <input type="hidden" value="{{row[0]}}" name="value_id">
                 </form>
             </td>
-        
+        <div class="due_date">
+            <td>Due:<br>{{row[3][-2]}}{{row[3][-1]}}-{{row[3][-5]}}{{row[3][-4]}}</td>
+        </div>
         <td><a href='/view/{{row[0]}}'>View</a></td>
         <td><a href='/edit/{{row[0]}}'>edit</a></td>
 

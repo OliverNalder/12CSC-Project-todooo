@@ -52,6 +52,7 @@ table {
     text-align: center;
 }
 
+
 .help {
     text-align: right;
     padding: 15px;
@@ -123,3 +124,4 @@ input, select, input[type=text]::placeholder, input[type=password]::placeholder,
     align-items: center;
 
 }
+

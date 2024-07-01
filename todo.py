@@ -12,7 +12,7 @@ current_user = ''
 order = 'ASC'
 sort_by = 'task'
 current_date = datetime.datetime.now()
-current_date = f"{current_date.strftime("%Y")}-{current_date.strftime("%m")}-{current_date.strftime("%d")}"
+current_date = f"{current_date.strftime('%Y')}-{current_date.strftime('%m')}-{current_date.strftime('%d')}"
 
 
 @route('/todo', method="GET")
@@ -43,7 +43,7 @@ def todo_list():
 
         conn = sqlite3.connect(f'user_db/{current_user}.db')
         c = conn.cursor()
-        c.execute(f"SELECT id, task, progress FROM todo WHERE status LIKE '1' ORDER BY {str(sort_by)} COLLATE NOCASE {str(order)}")
+        c.execute(f"SELECT id, task, progress, due FROM todo WHERE status LIKE '1' ORDER BY {str(sort_by)} COLLATE NOCASE {str(order)}")
         result = c.fetchall()
         c.close()
 
@@ -189,12 +189,10 @@ def delete_account():
         c.close()
         try:
             if bcrypt.checkpw(userBytes, checker[0][1]):
-
                 global current_user
+
                 current_user = ''
-                user_database = os.path.join("user_db", f'{username}.db')
-                os.remove(user_database)
-                return redirect('/')
+                return redirect(f'/deleted/{username}')
             else:
                 username_placeholder = 'Invalid Username or Password'
                 password_placeholder = 'Invalid Username or Password'
@@ -210,6 +208,17 @@ def delete_account():
     else:
         return template('delete_acc.tpl', user_text=username_placeholder, password_text=password_placeholder)
         
+@route('/deleted/<username>')
+def deleted(username):
+    os.remove(f"user_db/{username}.db")
+    conn = sqlite3.connect('acc_info.db')
+    c = conn.cursor()
+    c.execute("DELETE FROM acc_info WHERE username LIKE ?", (username,))
+    c.close()
+    conn.commit()
+
+    
+    return redirect('/')
 
 @route('/new', method='GET')
 def new_item():
