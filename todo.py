@@ -2,6 +2,7 @@ import sqlite3
 from bottle import route, run, debug, template, request, static_file, error, redirect
 import os
 import bcrypt
+import re
 
 # only needed when you run Bottle on mod_wsgi
 from bottle import default_app
@@ -122,7 +123,8 @@ def signup():
             user_database = os.path.join("user_db", f'{username}.db')
             conn = sqlite3.connect(user_database) # Warning: This file is created in the current directory
             conn.execute("CREATE TABLE todo (id INTEGER PRIMARY KEY, task char(100) NOT NULL, status bool NOT NULL, progress INTEGER NOT NULL, description STRING)")
-
+            global current_user
+            current_user = username
             return redirect('/')
     else:
         return template('signup.tpl', user_text=username_placeholder)
@@ -165,6 +167,46 @@ def login():
        
     else:
         return template('login.tpl', user_text=username_placeholder, password_text=password_placeholder)
+
+@route('/delete_account', method='GET')
+def delete_account():
+    username_placeholder = 'Username:'
+    password_placeholder = 'Password:'
+    if request.GET.delete_acc:
+        username = request.GET.username.strip()
+        password = request.GET.password.strip()
+
+        userBytes = password.encode('utf-8')
+        
+        conn = sqlite3.connect('acc_info.db')
+        c = conn.cursor()
+        c.execute("SELECT username,password FROM acc_info WHERE username = ?", (username,))
+        checker = c.fetchall()
+        
+        c.close()
+        try:
+            if bcrypt.checkpw(userBytes, checker[0][1]):
+
+                global current_user
+                current_user = ''
+                user_database = os.path.join("user_db", f'{username}.db')
+                os.remove(user_database)
+                return redirect('/')
+            else:
+                username_placeholder = 'Invalid Username or Password'
+                password_placeholder = 'Invalid Username or Password'
+                return template('delete_acc.tpl', user_text=username_placeholder, password_text=password_placeholder)
+
+        except IndexError:
+            username_placeholder = 'Invalid Username or Password'
+            password_placeholder = 'Invalid Username or Password'
+            return template('delete_acc.tpl', user_text=username_placeholder, password_text=password_placeholder)
+        
+          
+       
+    else:
+        return template('delete_acc.tpl', user_text=username_placeholder, password_text=password_placeholder)
+        
 
 @route('/new', method='GET')
 def new_item():
