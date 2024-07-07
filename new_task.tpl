@@ -20,10 +20,10 @@
             <option value="2">High</option>
             </select>
         <br>
-            <input type="date" name="due_date" value="{{date}}" min="{{date}}">
+            <input type="date" name="due_date" value="{{date}}" min="{{date}}" required>
         <br>
         <input type="submit" name="save" value="save">
-        <a href='/todo'>Back</a>
+        <a href='/todo' class="alt_td"><button class="button_1">Back</button></a>
     </form>
 </body>
 </html>

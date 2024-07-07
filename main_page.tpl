@@ -7,10 +7,10 @@
     <link href='/static/style.css' rel='stylesheet'>
 </head>
 <body>
-    <a href='/signup'>Sign up</a>
-    <a href='/login'>Login</a>
-    <a href='/delete_account'>Delete</a>
+    <a href='/signup'><button>Sign up</button></a>
+    <a href='/login'><button>Login</button></a>
+    <a href='/delete_account'><button>Delete</button></a>
     <h1>Main Page</h1>
-    <a href='/todo'>ToDo list</a>
+    <a href='/todo'><button>ToDo list</button></a>
 </body>
 </html>

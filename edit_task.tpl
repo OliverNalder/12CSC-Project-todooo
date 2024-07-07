@@ -19,7 +19,7 @@
         <option value="2">High</option>
         </select>
     <br>
-        <input type="date" name="due_date" value="{{old_due}}" min="{{created}}">
+        <input type="date" name="due_date" value="{{old_due}}" min="{{created}}" required>
     <br>
     <input type="submit" name="save" value="save">
 </form>

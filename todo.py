@@ -103,7 +103,14 @@ def signup():
     username_placeholder = 'Username:'
     if request.GET.save:
         username = request.GET.username.strip()
+        password = request.GET.password.strip()
 
+        if not re.match(r"^[a-zA-Z0-9]+$", username):
+            return template('signup.tpl', user_text="Username may contain only alphanumeric characters")
+
+
+        if " " in username:
+            return template('signup.tpl', user_text="Username cannot contain spaces.")
         
         conn = sqlite3.connect('acc_info.db')
         c = conn.cursor()
@@ -120,12 +127,13 @@ def signup():
         except IndexError:
             conn = sqlite3.connect('acc_info.db')
             c = conn.cursor()
-            c.execute("INSERT INTO acc_info (username,password) VALUES (?,?)", (username, bcrypt.hashpw(request.GET.password.strip().encode('utf-8'), bcrypt.gensalt())))
+            c.execute("INSERT INTO acc_info (username,password) VALUES (?,?)", (username, bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())))
             conn.commit()
             c.close
             user_database = os.path.join("user_db", f'{username}.db')
             conn = sqlite3.connect(user_database) # Warning: This file is created in the current directory
             conn.execute("CREATE TABLE todo (id INTEGER PRIMARY KEY, task char(100) NOT NULL, status bool NOT NULL, progress INTEGER NOT NULL, description STRING, priority STRING, created DATE, due DATE)")
+            conn.close()
             global current_user
             current_user = username
             return redirect('/')
@@ -210,13 +218,20 @@ def delete_account():
         
 @route('/deleted/<username>')
 def deleted(username):
-    os.remove(f"user_db/{username}.db")
-    conn = sqlite3.connect('acc_info.db')
-    c = conn.cursor()
-    c.execute("DELETE FROM acc_info WHERE username LIKE ?", (username,))
-    c.close()
-    conn.commit()
-
+    try:
+        os.remove(f"user_db/{username}.db")
+        conn = sqlite3.connect('acc_info.db')
+        c = conn.cursor()
+        c.execute("DELETE FROM acc_info WHERE username LIKE ?", (username,))
+        c.close()
+        conn.commit()
+    except PermissionError:
+        os.remove(f"user_db/{username}.db")
+        conn = sqlite3.connect('acc_info.db')
+        c = conn.cursor()
+        c.execute("DELETE FROM acc_info WHERE username LIKE ?", (username,))
+        c.close()
+        conn.commit()
     
     return redirect('/')
 

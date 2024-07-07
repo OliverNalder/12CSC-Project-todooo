@@ -15,7 +15,7 @@
         <br>
         <input type="password" size="100" maxlength="100" minlength="8" placeholder="{{password_text}}" name="password">
         <br>
-        <input type="submit" name="save" value="save">
+        <input type="submit" name="save" value="Login">
     </form>
 </body>
 </html>
