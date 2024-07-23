@@ -12,10 +12,17 @@ h1 {
 
 
 p {
-    color: hotpink;
+    
     margin-top: -35px;
     margin: auto;
     text-align: center;
+    color: rgb(26, 106, 131);
+    font-size: 25px;
+}
+
+.left_heading {
+    margin: auto;
+    text-align: left;
 }
 
 a, a:visited {
@@ -118,10 +125,6 @@ table {
     
 }
 
-.slider {
-    width: 100%;
-}
-
 input, select, input[type=text]::placeholder, input[type=password]::placeholder, textarea, .button_1 {
     color: rgb(26, 106, 131);
     padding-top: 8px;
@@ -133,6 +136,7 @@ input, select, input[type=text]::placeholder, input[type=password]::placeholder,
     font-size: 25px;
     margin-top: 15px;
     width: auto;
+    min-width: 115px;
     
     
 }
@@ -141,11 +145,18 @@ input[type=text]::placeholder, input[type=password]::placeholder, input, textare
     padding-left: 7px;
 }
 
+.slider {
+    width: 100%;
+    padding-left: 0px;
+}
+
 .left_title h1 {
     text-align: left;
 }
 
-
+.table_save {
+    min-width: 0px;
+}
 
 .sorting {
     text-align: center;
@@ -160,4 +171,18 @@ input[type=text]::placeholder, input[type=password]::placeholder, input, textare
 
 .table_height {
     height: 69px;
+}
+
+h2 {
+    text-align: center;
+}
+
+.priority {
+    margin-top: -13px;
+}
+
+.viewer_page {
+    margin-left: auto;
+    margin-right: auto;
+    text-align: center;
 }

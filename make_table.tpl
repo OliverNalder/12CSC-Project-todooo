@@ -1,27 +1,32 @@
 %#template to generate a HTML table from tuples (or list of lists, or tuple or tuples or ...)
-<link href='/static/style.css' rel='stylesheet'>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>To Do list</title>
+    <link href='/static/style.css' rel='stylesheet'>
+</head>
 <div class="help"><a href='/help'>?</a></div>
 <h1>To Do List</h1>
 <div class="sorting">
     <form method="GET">
         <select name="Sort_By">
             <option selected disabled hidden>Sort By:</option>
-            <option>name</option>
-            <option>priority</option>
-            <option>progress</option>
+            <option>Name</option>
+            <option>Priority</option>
+            <option>Progress</option>
             <option value="due">Due Date</option>
         </select>
         <select name="Order" placeholder="Order">
             <option selected disabled hidden>Order:</option>
-            <option>descending</option>
-            <option>ascending</option>
+            <option>Descending</option>
+            <option>Ascending</option>
         </select>
-        <input type="submit" name="save" value="save">
+        <input type="submit" name="save" value="Save">
     </form>
 </div>
 
 %if rows != []:
-    <p>The open items are as follows:</p>
+    <p>Your open tasks are as follows:</p>
     <table border="1">
     %num = 0
 
@@ -44,7 +49,7 @@
                             <input type="range" min="0" max="8" value="{{row[2]}}" name="slider" class="slider" id="{{row[2]}}">
                         </div>
                         <div class="slider_save">
-                            <input type="submit" value="save" name="progress_save">
+                            <input type="submit" value="save" name="progress_save" class="table_save">
                         </div>
                     </div>
                     <input type="hidden" value="{{row[0]}}" name="value_id">

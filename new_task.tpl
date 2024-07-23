@@ -7,14 +7,15 @@
     <link href='/static/style.css' rel='stylesheet'>
 </head>
 <body>
-    <h1>Add a new task to the To Do list:</h1>
+    <h1 class="left_heading">Add a new task to the To Do list:</h1>
     <form action="/new" method="GET">
-        <input type="text" size="100" maxlength="100" name="task" placeholder="Task Name:">
+        <input type="text" size="50" maxlength="100" name="task" placeholder="Task Name:">
         <br>
-        <textarea id="description" name="description" rows="8" cols="100" placeholder="Description (Optional)"></textarea>
+        <textarea id="description" name="description" rows="4" cols="49" placeholder="Description (Optional)"></textarea>
         <br>
-            <p>Priority:</p>
-            <select name="priority">
+            <p class="left_heading">Priority:</p>
+        <br>
+            <select name="priority" class="priority">
             <option value="0">Low</option>
             <option value="1">Medium</option>
             <option value="2">High</option>
@@ -22,8 +23,9 @@
         <br>
             <input type="date" name="due_date" value="{{date}}" min="{{date}}" required>
         <br>
-        <input type="submit" name="save" value="save">
-        <a href='/todo' class="alt_td"><button class="button_1">Back</button></a>
+        <input type="submit" name="save" value="Save">
+        
     </form>
+    <a href='/todo' class="alt_td"><button class="button_1">Back</button></a>
 </body>
 </html>

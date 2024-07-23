@@ -9,6 +9,7 @@ import datetime
 from bottle import default_app
 
 current_user = ''
+delete_detection = False
 order = 'ASC'
 sort_by = 'task'
 current_date = datetime.datetime.now()
@@ -28,13 +29,13 @@ def todo_list():
             new_order = request.GET.Order.strip()
             new_sort_by = request.GET.Sort_By.strip()
 
-            if new_order == 'ascending':
+            if new_order == 'Ascending':
                 order = 'ASC'
 
-            elif new_order == 'descending':
+            elif new_order == 'Descending':
                 order = 'DESC'
 
-            if new_sort_by == 'name':
+            if new_sort_by == 'Name':
                 sort_by = 'task'
             elif new_sort_by != '':
                 sort_by = new_sort_by
@@ -71,32 +72,38 @@ def todo_list():
     
 @route('/archive_all/<no:int>')
 def archive_all(no):
-    if no == 0:
-        conn = sqlite3.connect(f'user_db/{current_user}.db')
-        c = conn.cursor()
-        c.execute("UPDATE todo SET status = 0 WHERE status = 1")
-        conn.commit()
-        c.close()
-        return redirect('/todo')
-    elif no == 1:
-        conn = sqlite3.connect(f'user_db/{current_user}.db')
-        c = conn.cursor()
-        c.execute("UPDATE todo SET status = 1 WHERE status = 0")
-        conn.commit()
-        c.close()
-        return redirect('/todo')
+    if current_user == '':
+        return redirect('/login')
+    else:
+        if no == 0:
+            conn = sqlite3.connect(f'user_db/{current_user}.db')
+            c = conn.cursor()
+            c.execute("UPDATE todo SET status = 0 WHERE status = 1")
+            conn.commit()
+            c.close()
+            return redirect('/todo')
+        elif no == 1:
+            conn = sqlite3.connect(f'user_db/{current_user}.db')
+            c = conn.cursor()
+            c.execute("UPDATE todo SET status = 1 WHERE status = 0")
+            conn.commit()
+            c.close()
+            return redirect('/todo')
 
 
 @route('/closed')
 def closed_list():
-    conn = sqlite3.connect(f'user_db/{current_user}.db')
-    c = conn.cursor()
-    c.execute("SELECT id, task FROM todo WHERE status LIKE '0'")
-    result = c.fetchall()
-    c.close
+    if current_user == '':
+        return redirect('/login')
+    else:
+        conn = sqlite3.connect(f'user_db/{current_user}.db')
+        c = conn.cursor()
+        c.execute("SELECT id, task FROM todo WHERE status LIKE '0'")
+        result = c.fetchall()
+        c.close
 
-    output = template('archives_table', rows=result)
-    return output
+        output = template('archives_table', rows=result)
+        return output
 
 @route("/signup", method="GET")
 def signup():
@@ -181,6 +188,7 @@ def login():
 
 @route('/delete_account', method='GET')
 def delete_account():
+    
     username_placeholder = 'Username:'
     password_placeholder = 'Password:'
     if request.GET.delete_acc:
@@ -198,7 +206,8 @@ def delete_account():
         try:
             if bcrypt.checkpw(userBytes, checker[0][1]):
                 global current_user
-
+                global delete_detection
+                delete_detection = True
                 current_user = ''
                 return redirect(f'/deleted/{username}')
             else:
@@ -218,96 +227,104 @@ def delete_account():
         
 @route('/deleted/<username>')
 def deleted(username):
-    try:
-        os.remove(f"user_db/{username}.db")
-        conn = sqlite3.connect('acc_info.db')
-        c = conn.cursor()
-        c.execute("DELETE FROM acc_info WHERE username LIKE ?", (username,))
-        c.close()
-        conn.commit()
-    except PermissionError:
-        os.remove(f"user_db/{username}.db")
-        conn = sqlite3.connect('acc_info.db')
-        c = conn.cursor()
-        c.execute("DELETE FROM acc_info WHERE username LIKE ?", (username,))
-        c.close()
-        conn.commit()
-    
+    global delete_detection
+    if delete_detection:
+        try:
+            conn = sqlite3.connect(f'user_db/{username}.db')
+            conn.close()
+            
+            os.remove(f"user_db/{username}.db")
+            conn = sqlite3.connect('acc_info.db')
+            c = conn.cursor()
+            c.execute("DELETE FROM acc_info WHERE username LIKE ?", (username,))
+            c.close()
+            conn.commit()
+        except PermissionError:
+            return redirect(f'/deleted/{username}')
+        delete_detection = False
+        return redirect('/')
     return redirect('/')
 
 @route('/new', method='GET')
 def new_item():
-    global current_date
-    
-    if request.GET.save:
-
-        new = request.GET.task.strip()
-        desc = request.GET.description.strip()
-        priority = request.GET.priority.strip()
-        due_date = request.GET.due_date.strip()
-        conn = sqlite3.connect(f'user_db/{current_user}.db')
-        c = conn.cursor()
-
-        c.execute("INSERT INTO todo (task,status,progress,description,priority,created,due) VALUES (?,?,?,?,?,?,?)", (new, 1, 0, desc, priority,current_date,due_date))
-        new_id = c.lastrowid
-
-        conn.commit()
-        c.close()
-
-        return redirect('/todo')
-
+    if current_user == '':
+        return redirect('/login')
     else:
-        return template('new_task.tpl', date=current_date)
+        global current_date
+
+        if request.GET.save:
+
+            new = request.GET.task.strip()
+            desc = request.GET.description.strip()
+            priority = request.GET.priority.strip()
+            due_date = request.GET.due_date.strip()
+            conn = sqlite3.connect(f'user_db/{current_user}.db')
+            c = conn.cursor()
+
+            c.execute("INSERT INTO todo (task,status,progress,description,priority,created,due) VALUES (?,?,?,?,?,?,?)", (new, 1, 0, desc, priority,current_date,due_date))
+            new_id = c.lastrowid
+
+            conn.commit()
+            c.close()
+
+            return redirect('/todo')
+
+        else:
+            return template('new_task.tpl', date=current_date)
 
 
 @route('/edit/<no:int>', method='GET')
 def edit_item(no):
-
-    if request.GET.save:
-        edit = request.GET.task.strip()
-        status = request.GET.status.strip()
-        desc = request.GET.description.strip()
-        priority = request.GET.priority.strip()
-        due_date = request.GET.due_date.strip()
-
-        if status == 'open':
-            status = 1
-        else:
-            status = 0
-
-        conn = sqlite3.connect(f'user_db/{current_user}.db')
-        c = conn.cursor()
-        c.execute("UPDATE todo SET task = ?, status = ?, description = ?, priority = ?, due = ? WHERE id LIKE ?", (edit, status, desc, priority, due_date, no))
-        conn.commit()
-        c.close()
-        
-
-        return redirect('/todo')
-    
-    elif request.GET.delete:
-        conn = sqlite3.connect(f'user_db/{current_user}.db')
-        c = conn.cursor()
-        c.execute("DELETE FROM todo WHERE id LIKE ?", (str(no)))
-        c.close()
-        conn.commit()
-        return redirect('/todo')
-    
+    if current_user == '':
+        return redirect('/login')
     else:
-        conn = sqlite3.connect(f'user_db/{current_user}.db')
-        c = conn.cursor()
-        c.execute("SELECT task,description,priority,created,due FROM todo WHERE id LIKE ?", (str(no)))
-        cur_data = c.fetchone()
-        c.close()
+        if request.GET.save:
+            edit = request.GET.task.strip()
+            status = request.GET.status.strip()
+            desc = request.GET.description.strip()
+            priority = request.GET.priority.strip()
+            due_date = request.GET.due_date.strip()
 
-        if cur_data[2] == 0:
-            old_priority = "Low"
-        elif cur_data[2] == 1:
-            old_priority = "Medium"
+            if status == 'Open':
+                status = 1
+            else:
+                status = 0
+
+            conn = sqlite3.connect(f'user_db/{current_user}.db')
+            c = conn.cursor()
+            c.execute("UPDATE todo SET task = ?, status = ?, description = ?, priority = ?, due = ? WHERE id LIKE ?", (edit, status, desc, priority, due_date, no))
+            conn.commit()
+            c.close()
+
+
+            return redirect('/todo')
+
+        elif request.GET.delete:
+            conn = sqlite3.connect(f'user_db/{current_user}.db')
+            c = conn.cursor()
+            c.execute("DELETE FROM todo WHERE id LIKE ?", (str(no)))
+            c.close()
+            conn.commit()
+            return redirect('/todo')
+
         else:
-            old_priority = "High"
+            try:
+                conn = sqlite3.connect(f'user_db/{current_user}.db')
+                c = conn.cursor()
+                c.execute("SELECT task,description,priority,created,due FROM todo WHERE id LIKE ?", (str(no)))
+                cur_data = c.fetchone()
+                c.close()
 
-        return template('edit_task', old=cur_data[0], no=no, old_desc=cur_data[1], old_priority=old_priority, created=cur_data[3], old_due=cur_data[4])
+                if cur_data[2] == 0:
+                    old_priority = "Low"
+                elif cur_data[2] == 1:
+                    old_priority = "Medium"
+                else:
+                    old_priority = "High"
 
+                return template('edit_task', old=cur_data[0], no=no, old_desc=cur_data[1], old_priority=old_priority, created=cur_data[3], old_due=cur_data[4])
+            except TypeError:
+                return redirect('/todo')
 
 @route('/item<item:re:[0-9]+>')
 def show_item(item):
@@ -325,18 +342,32 @@ def show_item(item):
 
 @route('/view/<no:int>')
 def view_item(no):
-    conn = sqlite3.connect(f'user_db/{current_user}.db')
-    c = conn.cursor()
-    c.execute("SELECT task, status, progress, description FROM todo WHERE id LIKE ?", (str(no)))
-    info = c.fetchall()
-    print(info)
-    if info[0][1] == '1':
-        status = "Open"
+    if current_user == '':
+        return redirect('/login')
     else:
-        status = "Closed"
+        try:
+            conn = sqlite3.connect(f'user_db/{current_user}.db')
+            c = conn.cursor()
+            c.execute("SELECT task, status, progress, description, priority, created, due FROM todo WHERE id LIKE ?", (str(no)))
+            info = c.fetchall()
+            c.close()
+            if info[0][1] == 1:
+                status = "Open"
+            else:
+                status = "Closed"
 
-    c.close()
-    return template('viewer', no=no, task=info[0][0], status=status, progress=info[0][2], description=info[0][3])
+            if info[0][3] == '':
+                description = 'No description'
+            else:
+                description = info[0][3]
+
+
+
+        
+    
+            return template('viewer', no=no, task=info[0][0], status=status, progress=info[0][2], description=description, priority=info[0][4], created=str(info[0][5]), due=str(info[0][6]))
+        except TypeError:
+            return redirect('/todo')
 
 @route('/help')
 def help():

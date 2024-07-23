@@ -9,8 +9,8 @@
 <body>
     <a href='/signup'><button>Sign up</button></a>
     <a href='/login'><button>Login</button></a>
-    <a href='/delete_account'><button>Delete</button></a>
+    <a href='/delete_account'><button>Delete Acc</button></a>
     <h1>Main Page</h1>
-    <a href='/todo'><button>ToDo list</button></a>
+    <a href='/todo'><button>To Do list</button></a>
 </body>
 </html>

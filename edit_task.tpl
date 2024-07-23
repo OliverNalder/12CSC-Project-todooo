@@ -1,25 +1,36 @@
-%#template for editing a task
-%#the template expects to receive a value for "no" as well a "old", the text of the selected ToDo item
-<link href='/static/style.css' rel='stylesheet'>
-<p>Edit the task with ID = {{no}}</p>
-<form action="/edit/{{no}}" method="get">
-    <input type="text" name="task" value="{{old}}" size="100" maxlength="100">
-    <select name="status">
-        <option>open</option>
-        <option>closed</option>
-    </select>
-    <input type="submit" value="delete" name="delete">
-    <br>
-    <textarea id="description" name="description" rows="4" cols="50" placeholder="Description (Optional)">{{old_desc}}</textarea>
-    <br>
-        <select name="priority">
-        <option selected disabled hidden>{{old_priority}}</option>
-        <option value="0">Low</option>
-        <option value="1">Medium</option>
-        <option value="2">High</option>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Task</title>
+    <link href='/static/style.css' rel='stylesheet'>
+</head>
+<body>
+    <h1 class="left_heading">Edit the task with ID = {{no}}</h1>
+    <form action="/edit/{{no}}" method="get">
+        <input type="text" name="task" value="{{old}}" size="50" maxlength="100">
+        <select name="status">
+            <option>Open</option>
+            <option>Closed</option>
         </select>
-    <br>
-        <input type="date" name="due_date" value="{{old_due}}" min="{{created}}" required>
-    <br>
-    <input type="submit" name="save" value="save">
-</form>
+        <input type="submit" value="Delete" name="delete">
+        <br>
+        <textarea id="description" name="description" rows="4" cols="49" placeholder="Description (Optional)">{{old_desc}}</textarea>
+        <br>
+            <p class="left_heading">Priority:</p>
+        <br>
+            <select name="priority" class="priority">
+            <option selected disabled hidden>{{old_priority}}</option>
+            <option value="0">Low</option>
+            <option value="1">Medium</option>
+            <option value="2">High</option>
+            </select>
+        <br>
+            <input type="date" name="due_date" value="{{old_due}}" min="{{created}}" required>
+        <br>
+        <input type="submit" name="save" value="Save">
+    </form>
+    <a href='/todo' class="alt_td"><button class="button_1">Back</button></a>
+</body>
+</html>

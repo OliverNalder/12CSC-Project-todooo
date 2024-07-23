@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Delete Account</title>
     <link href='/static/style.css' rel='stylesheet'>
 </head>
 <body>
@@ -17,5 +17,6 @@
         <br>
         <input type="submit" name="delete_acc" value="Delete Account">
     </form>
+    <a href='/' class="alt_td"><button class="button_1">Back</button></a>
 </body>
 </html>

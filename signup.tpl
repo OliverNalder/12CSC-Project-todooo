@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Signup</title>
+    <title>Sign up</title>
     <link href='/static/style.css' rel='stylesheet'>
 </head>
 <body>
@@ -15,7 +15,8 @@
         <br>
         <input type="text" size="100" maxlength="100" minlength="8" placeholder="Password:" name="password" required>
         <br>
-        <input type="submit" name="save" value="save">
+        <input type="submit" name="save" value="Create">
     </form>
+    <a href='/' class="alt_td"><button class="button_1">Back</button></a>
 </body>
 </html>
