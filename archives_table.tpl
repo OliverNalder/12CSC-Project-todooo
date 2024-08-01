@@ -18,7 +18,7 @@
         <td class='arch_td'>ID: {{row[0]}}</td>
         <td>{{row[1]}}</td>
         <td class="alt_td"><a href='/view/{{row[0]}}'>View</a></td>
-        <td class="alt_td"><a href='/edit/{{row[0]}}'>edit</a></td>
+        <td class="alt_td"><a href='/edit/{{row[0]}}'>Edit</a></td>
         </tr>
     %end
     </table>
