@@ -341,18 +341,20 @@ def view_item(no):
             c.execute("SELECT task, status, progress, description, priority, created, due FROM todo WHERE id LIKE ?", (str(no),))
             info = c.fetchall()
             c.close()
+            try:
+                # Convert status to string
+                if info[0][1] == 1:
+                    status = "Open"
+                else:
+                    status = "Closed"
 
-            # Convert status to string
-            if info[0][1] == 1:
-                status = "Open"
-            else:
-                status = "Closed"
+                # Set description if not provided
+                description = info[0][3] if info[0][3] else 'No description'
 
-            # Set description if not provided
-            description = info[0][3] if info[0][3] else 'No description'
-
-            # Render the task viewer template
-            return template('viewer', no=no, task=info[0][0], status=status, progress=info[0][2], description=description, priority=info[0][4], created=str(info[0][5]), due=str(info[0][6]))
+                # Render the task viewer template
+                return template('viewer', no=no, task=info[0][0], status=status, progress=info[0][2], description=description, priority=info[0][4], created=str(info[0][5]), due=str(info[0][6]))
+            except IndexError:
+                return redirect('/todo')
         except TypeError:
             return redirect('/todo')
 
